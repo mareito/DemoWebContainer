@@ -12,7 +12,7 @@ if (process.env.POSTGRES_URL) {
   pool = new Pool({
     user: 'postgres', // Usuario por defecto de postgres
     host: 'localhost',
-    database: 'postgres', // Base de datos por defecto de postgres
+    database: 'contenedores', // Base de datos especificada por el usuario
     password: 'postgres', // Contraseña común para instalaciones locales
     port: 5432, // Puerto por defecto de postgres
   });
