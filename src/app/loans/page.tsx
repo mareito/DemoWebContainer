@@ -2,6 +2,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import useLoanStore, { Loan } from "@/store/loanStore";
+import useUserStore, { User } from "@/store/userStore";
+import useBookStore, { Book } from "@/store/bookStore";
 
 interface LoanModalProps {
   isOpen: boolean;
@@ -12,6 +14,13 @@ interface LoanModalProps {
 const LoanModal = ({ isOpen, onClose, onAddLoan }: LoanModalProps) => {
   const [id_usuario, setIdUsuario] = useState("");
   const [id_libro, setIdLibro] = useState("");
+  const { users, fetchUsers } = useUserStore();
+  const { books, fetchBooks } = useBookStore();
+
+  useEffect(() => {
+    fetchUsers();
+    fetchBooks();
+  }, [fetchUsers, fetchBooks]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +44,22 @@ const LoanModal = ({ isOpen, onClose, onAddLoan }: LoanModalProps) => {
         <h2 className="text-2xl font-bold mb-6">Crear Nuevo Préstamo</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="id_usuario" className="block text-gray-700 font-semibold mb-2">ID de Usuario</label>
-            <input type="number" id="id_usuario" value={id_usuario} onChange={(e) => setIdUsuario(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" required />
+            <label htmlFor="id_usuario" className="block text-gray-700 font-semibold mb-2">Usuario</label>
+            <select id="id_usuario" value={id_usuario} onChange={(e) => setIdUsuario(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" required>
+              <option value="">Seleccione un usuario</option>
+              {users.map((user) => (
+                <option key={user.id_usuario} value={user.id_usuario}>{user.nombre}</option>
+              ))}
+            </select>
           </div>
           <div className="mb-6">
-            <label htmlFor="id_libro" className="block text-gray-700 font-semibold mb-2">ID de Libro</label>
-            <input type="number" id="id_libro" value={id_libro} onChange={(e) => setIdLibro(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" required />
+            <label htmlFor="id_libro" className="block text-gray-700 font-semibold mb-2">Libro</label>
+            <select id="id_libro" value={id_libro} onChange={(e) => setIdLibro(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg" required>
+              <option value="">Seleccione un libro</option>
+              {books.map((book) => (
+                <option key={book.id_libro} value={book.id_libro}>{book.titulo}</option>
+              ))}
+            </select>
           </div>
           <div className="flex justify-end gap-4">
             <button type="button" onClick={onClose} className="py-2 px-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Cancelar</button>
@@ -54,11 +73,25 @@ const LoanModal = ({ isOpen, onClose, onAddLoan }: LoanModalProps) => {
 
 const LoanList = () => {
   const { loans, fetchLoans, addLoan } = useLoanStore();
+  const { users, fetchUsers } = useUserStore();
+  const { books, fetchBooks } = useBookStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchLoans();
-  }, [fetchLoans]);
+    fetchUsers();
+    fetchBooks();
+  }, [fetchLoans, fetchUsers, fetchBooks]);
+
+  const getUserName = (id: number) => {
+    const user = users.find((user) => user.id_usuario === id);
+    return user ? user.nombre : 'Usuario no encontrado';
+  };
+
+  const getBookTitle = (id: number) => {
+    const book = books.find((book) => book.id_libro === id);
+    return book ? book.titulo : 'Libro no encontrado';
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
@@ -70,8 +103,8 @@ const LoanList = () => {
       <table className="w-full">
         <thead>
           <tr className="bg-gray-100">
-            <th className="p-3 text-left">ID de Usuario</th>
-            <th className="p-3 text-left">ID de Libro</th>
+            <th className="p-3 text-left">Usuario</th>
+            <th className="p-3 text-left">Libro</th>
             <th className="p-3 text-left">Fecha de Préstamo</th>
             <th className="p-3 text-left">Fecha de Devolución</th>
             <th className="p-3 text-left">Estado</th>
@@ -80,8 +113,8 @@ const LoanList = () => {
         <tbody>
           {loans.map((loan) => (
             <tr key={loan.id_prestamo} className="border-b">
-              <td className="p-3">{loan.id_usuario}</td>
-              <td className="p-3">{loan.id_libro}</td>
+              <td className="p-3">{getUserName(loan.id_usuario)}</td>
+              <td className="p-3">{getBookTitle(loan.id_libro)}</td>
               <td className="p-3">{loan.fecha_prestamo}</td>
               <td className="p-3">{loan.fecha_devolucion_esperada}</td>
               <td className="p-3">{loan.estado}</td>
