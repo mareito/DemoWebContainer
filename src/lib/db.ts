@@ -8,9 +8,13 @@ if (process.env.POSTGRES_URL) {
     connectionString: process.env.POSTGRES_URL,
   });
 } else {
-  // Manejo para entorno local o de desarrollo sin URL de conexión
+  // Configuración para entorno local o de desarrollo sin URL de conexión
   pool = new Pool({
-    // Configuración para entorno local
+    user: 'postgres', // Usuario por defecto de postgres
+    host: 'localhost',
+    database: 'postgres', // Base de datos por defecto de postgres
+    password: 'postgres', // Contraseña común para instalaciones locales
+    port: 5432, // Puerto por defecto de postgres
   });
 }
 
