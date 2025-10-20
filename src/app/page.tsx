@@ -1,103 +1,67 @@
-import Image from "next/image";
 
-export default function Home() {
+"use client";
+import { useEffect, ElementType } from "react";
+import { Users, Book, Library } from "lucide-react";
+import useUserStore from "@/store/userStore";
+import useBookStore from "@/store/bookStore";
+import useLoanStore from "@/store/loanStore";
+
+const StatCard = ({
+  title,
+  value,
+  icon: Icon,
+  color,
+}: {
+  title: string;
+  value: number;
+  icon: ElementType;
+  color: string;
+}) => (
+  <div
+    className={`bg-gradient-to-br ${color} text-white p-6 rounded-lg shadow-lg flex items-center`}
+  >
+    <Icon className="h-12 w-12 mr-4" />
+    <div>
+      <p className="text-lg font-semibold">{title}</p>
+      <p className="text-3xl font-bold">{value}</p>
+    </div>
+  </div>
+);
+
+export default function DashboardPage() {
+  const { users, fetchUsers } = useUserStore();
+  const { books, fetchBooks } = useBookStore();
+  const { loans, fetchLoans } = useLoanStore();
+
+  useEffect(() => {
+    fetchUsers();
+    fetchBooks();
+    fetchLoans();
+  }, [fetchUsers, fetchBooks, fetchLoans]);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div>
+      <h1 className="text-4xl font-bold mb-8">Panel de la Biblioteca</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <StatCard
+          title="Usuarios Totales"
+          value={users.length}
+          icon={Users}
+          color="from-blue-400 to-blue-600"
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <StatCard
+          title="Libros Totales"
+          value={books.length}
+          icon={Book}
+          color="from-green-400 to-green-600"
+        />
+        <StatCard
+          title="Préstamos Activos"
+          value={loans.filter((loan) => loan.estado === "activo").length}
+          icon={Library}
+          color="from-yellow-400 to-yellow-600"
+        />
+      </div>
     </div>
   );
 }
