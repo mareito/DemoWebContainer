@@ -93,6 +93,12 @@ const LoanList = () => {
     return book ? book.titulo : 'Libro no encontrado';
   };
 
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const [year, month, day] = dateString.split('-');
+    return `${day}-${month}-${year}`;
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-between">
@@ -115,8 +121,8 @@ const LoanList = () => {
             <tr key={loan.id_prestamo} className="border-b">
               <td className="p-3">{getUserName(loan.id_usuario)}</td>
               <td className="p-3">{getBookTitle(loan.id_libro)}</td>
-              <td className="p-3">{loan.fecha_prestamo}</td>
-              <td className="p-3">{loan.fecha_devolucion_esperada}</td>
+              <td className="p-3">{formatDate(loan.fecha_prestamo)}</td>
+              <td className="p-3">{formatDate(loan.fecha_devolucion_esperada)}</td>
               <td className="p-3">{loan.estado}</td>
             </tr>
           ))}
