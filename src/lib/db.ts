@@ -1,12 +1,17 @@
 
 import { Pool } from 'pg';
 
-let pool;
+let pool: Pool;
 
-if (!pool) {
+if (process.env.POSTGRES_URL) {
   pool = new Pool({
     connectionString: process.env.POSTGRES_URL,
   });
+} else {
+  // Manejo para entorno local o de desarrollo sin URL de conexión
+  pool = new Pool({
+    // Configuración para entorno local
+  });
 }
 
-export default pool;
+export const query = (text: string, params: (string | number | boolean | Date | null)[]) => pool.query(text, params);

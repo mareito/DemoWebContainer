@@ -1,20 +1,28 @@
 
 "use client";
 import { useEffect, useState } from "react";
-import useLoanStore from "@/store/loanStore";
+import useLoanStore, { Loan } from "@/store/loanStore";
 
-const LoanModal = ({ isOpen, onClose, onAddLoan }) => {
+interface LoanModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAddLoan: (loan: Omit<Loan, 'id_prestamo'>) => void;
+}
+
+const LoanModal = ({ isOpen, onClose, onAddLoan }: LoanModalProps) => {
   const [id_usuario, setIdUsuario] = useState("");
   const [id_libro, setIdLibro] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAddLoan({ 
       id_usuario: parseInt(id_usuario), 
       id_libro: parseInt(id_libro), 
       fecha_prestamo: new Date().toISOString().split('T')[0],
       fecha_devolucion_esperada: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString().split('T')[0], // 15 days from now
-      estado: 'activo'
+      estado: 'activo',
+      fecha_devolucion_real: null,
+      observaciones: ''
     });
     onClose();
   };
@@ -54,7 +62,7 @@ const LoanList = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-        <div class="flex justify-between">
+        <div className="flex justify-between">
             <h2 className="text-2xl font-semibold mb-4">Préstamos</h2>
             <button onClick={() => setIsModalOpen(true)} className="mb-4 py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Crear Préstamo</button>
         </div>

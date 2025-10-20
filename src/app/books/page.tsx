@@ -94,7 +94,7 @@ const BookList = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = (bookData, id) => {
+  const handleSave = (bookData: Omit<Book, "id_libro">, id?: number) => {
     if (id) {
       updateBook(id, bookData);
     } else {

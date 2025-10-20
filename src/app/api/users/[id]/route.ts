@@ -1,29 +1,25 @@
 
 import { NextResponse, NextRequest } from 'next/server';
-import pool from '@/lib/db';
+import { query } from '@/lib/db';
 
-// Función DELETE existente
-export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const client = await pool.connect();
-    await client.query('DELETE FROM usuarios WHERE id_usuario = $1', [context.params.id]);
-    client.release();
+    const { id } = await params;
+    await query('DELETE FROM usuarios WHERE id_usuario = $1', [id]);
     return new NextResponse(null, { status: 204 }); // No Content
   } catch {
     return NextResponse.json({ error: 'Error deleting user' }, { status: 500 });
   }
 }
 
-// Nueva función PUT para actualizar
-export async function PUT(request: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const { nombre, apellido, email } = await request.json();
-    const client = await pool.connect();
-    const result = await client.query(
+    const result = await query(
       'UPDATE usuarios SET nombre = $1, apellido = $2, email = $3 WHERE id_usuario = $4 RETURNING *',
-      [nombre, apellido, email, context.params.id]
+      [nombre, apellido, email, id]
     );
-    client.release();
 
     if (result.rows.length === 0) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });

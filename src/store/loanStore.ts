@@ -1,7 +1,8 @@
+
 import { create } from "zustand";
 import axios from "axios";
 
-interface Loan {
+export interface Loan {
   id_prestamo: number;
   id_usuario: number;
   id_libro: number;

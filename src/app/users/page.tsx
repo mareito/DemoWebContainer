@@ -95,7 +95,7 @@ const UserList = () => {
   };
 
   // Guardar (crear o actualizar)
-  const handleSave = (userData, id) => {
+  const handleSave = (userData: Omit<User, "id_usuario" | "fecha_registro">, id?: number) => {
     if (id) {
       updateUser(id, userData);
     } else {
